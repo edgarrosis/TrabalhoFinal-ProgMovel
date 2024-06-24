@@ -26,22 +26,21 @@ public class TelaJogo extends AppCompatActivity {
         btnPause = findViewById(R.id.btnPause);
 
         btnPause.setOnClickListener(v -> {
-            jogabilidade.resume();
-            if (!isPaused) {
-                jogabilidade.pause();
-                btnPause.setImageResource(android.R.drawable.ic_media_play);
-            } else {
+            if (isPaused) {
                 jogabilidade.resume();
                 btnPause.setImageResource(android.R.drawable.ic_media_pause);
+            } else {
+                jogabilidade.pause();
+                btnPause.setImageResource(android.R.drawable.ic_media_play);
             }
-            isPaused =!isPaused;
+            isPaused = !isPaused;
         });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (jogabilidade!= null) {
+        if (jogabilidade != null) {
             jogabilidade.pause();
         }
         isPaused = true;
@@ -50,7 +49,7 @@ public class TelaJogo extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (jogabilidade!= null && isPaused) {
+        if (jogabilidade != null && isPaused) {
             jogabilidade.resume();
         }
         isPaused = false;

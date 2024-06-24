@@ -13,7 +13,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.util.TypedValue;
 
-public class Jogabilidade extends SurfaceView implements Runnable, GestureDetector.OnGestureListener {
+public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder.Callback, GestureDetector.OnGestureListener {
     private Thread thread;
     private boolean isPlaying;
     private SurfaceHolder surfaceHolder;
@@ -21,8 +21,8 @@ public class Jogabilidade extends SurfaceView implements Runnable, GestureDetect
 
     private float passaroY;
     private float velocity = 0;
-    private final float gravity = 1f;
-    private final float flapVelocity = -25; // Ajuste conforme necessário
+    private final float gravity = 1.5f;
+    private final float flapVelocity = -25;
     private Bitmap passaroBitmap;
     private float passaroX;
     private int passaroWidth, passaroHeight;
@@ -40,17 +40,13 @@ public class Jogabilidade extends SurfaceView implements Runnable, GestureDetect
 
     private void init(Context context) {
         surfaceHolder = getHolder();
+        surfaceHolder.addCallback(this);
         gestureDetector = new GestureDetector(context, this);
 
-        passaroBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.vermelho); // Carrega a imagem do pássaro
-
-        // Define o tamanho do pássaro em dp e converte para pixels
-        passaroWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
-        passaroHeight = passaroWidth; // Mantém o pássaro como um quadrado
-
-        passaroBitmap = Bitmap.createScaledBitmap(passaroBitmap, passaroWidth, passaroHeight, false); // Redimensiona o pássaro
-
-        passaroX = getWidth()/2 + passaroWidth / 2; // Centraliza horizontalmente
+        passaroBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.vermelho);
+        passaroWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
+        passaroHeight = passaroWidth;
+        passaroBitmap = Bitmap.createScaledBitmap(passaroBitmap, passaroWidth, passaroHeight, false);
     }
 
     @Override
@@ -66,7 +62,6 @@ public class Jogabilidade extends SurfaceView implements Runnable, GestureDetect
         velocity += gravity;
         passaroY += velocity;
 
-        // Verifica colisão com a parte inferior ou superior da tela.
         if (passaroY < 0) {
             passaroY = 0;
             velocity = 0;
@@ -80,8 +75,8 @@ public class Jogabilidade extends SurfaceView implements Runnable, GestureDetect
         if (surfaceHolder.getSurface().isValid()) {
             Canvas canvas = surfaceHolder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE); // Limpa a tela
-                canvas.drawBitmap(passaroBitmap, passaroX, passaroY, null); // Desenha o pássaro
+                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(passaroBitmap, passaroX, passaroY, null);
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }
         }
@@ -89,7 +84,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, GestureDetect
 
     private void sleep() {
         try {
-            Thread.sleep(17); // Cálculo para termos no jogo aproximadamente 60 FPS
+            Thread.sleep(17);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -119,7 +114,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, GestureDetect
 
     @Override
     public boolean onDown(MotionEvent e) {
-        return true; // Indica que o gesto foi capturado
+        return true;
     }
 
     @Override
@@ -151,5 +146,20 @@ public class Jogabilidade extends SurfaceView implements Runnable, GestureDetect
         Intent intent = new Intent(getContext(), com.example.trabalhofinal_progmovel.MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         getContext().startActivity(intent);
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        passaroX = getWidth() / 4 - passaroWidth / 2;
+        resume();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        pause();
     }
 }
