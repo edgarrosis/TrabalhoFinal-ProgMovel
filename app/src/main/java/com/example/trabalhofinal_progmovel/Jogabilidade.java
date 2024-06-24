@@ -6,12 +6,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.util.TypedValue;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder.Callback, GestureDetector.OnGestureListener {
     private Thread thread;
@@ -21,11 +27,19 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     private float passaroY;
     private float velocity = 0;
-    private final float gravity = 1.5f;
-    private final float flapVelocity = -25;
+    private final float gravity = 1f;
+    private final float flapVelocity = -20;
     private Bitmap passaroBitmap;
     private float passaroX;
     private int passaroWidth, passaroHeight;
+
+    private List<Obstaculo> obstacles;
+    private Random random;
+    private int obstacleGap = 480; // Gap entre os obstáculos de cima e de baixo (ajustado para 400)
+    private int obstacleFrequency = 600; // Distância entre os obstáculos (ajustado para 500)
+    private int obstacleWidth = 180; // Largura dos obstáculos
+
+    private Bitmap backgroundBitmap;
 
     public Jogabilidade(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -43,10 +57,16 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         surfaceHolder.addCallback(this);
         gestureDetector = new GestureDetector(context, this);
 
+        // Carrega as imagens
         passaroBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.vermelho);
-        passaroWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
+        backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+
+        passaroWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
         passaroHeight = passaroWidth;
         passaroBitmap = Bitmap.createScaledBitmap(passaroBitmap, passaroWidth, passaroHeight, false);
+
+        obstacles = new ArrayList<>();
+        random = new Random();
     }
 
     @Override
@@ -56,6 +76,16 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
             draw();
             sleep();
         }
+    }
+
+    private void spawnObstacle() {
+        int screenHeight = getHeight();
+        int gapStart = random.nextInt(screenHeight - obstacleGap); // Ponto onde o gap começa
+
+        // Obstáculo superior
+        obstacles.add(new Obstaculo(getWidth(), 0, obstacleWidth, gapStart, Color.GREEN));
+        // Obstáculo inferior
+        obstacles.add(new Obstaculo(getWidth(), gapStart + obstacleGap, obstacleWidth, screenHeight - (gapStart + obstacleGap), Color.GREEN));
     }
 
     public void update() {
@@ -69,14 +99,38 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         } else if (passaroY > getHeight() - passaroHeight) {
             gameOver();
         }
+
+        if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).getBounds().left < getWidth() - obstacleFrequency) {
+            spawnObstacle();
+        }
+
+        Iterator<Obstaculo> iterator = obstacles.iterator();
+        while (iterator.hasNext()) {
+            Obstaculo obstacle = iterator.next();
+            obstacle.update();
+            if (obstacle.isOffScreen()) {
+                iterator.remove();
+            } else if (Rect.intersects(obstacle.getBounds(), new Rect((int) passaroX, (int) passaroY, (int) passaroX + passaroWidth, (int) passaroY + passaroHeight))) {
+                gameOver();
+            }
+        }
     }
 
     private void draw() {
         if (surfaceHolder.getSurface().isValid()) {
             Canvas canvas = surfaceHolder.lockCanvas();
             if (canvas != null) {
-                canvas.drawColor(Color.WHITE);
+                // Desenha o background
+                canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+
+                // Desenha o pássaro
                 canvas.drawBitmap(passaroBitmap, passaroX, passaroY, null);
+
+                // Desenha os obstáculos
+                for (Obstaculo obstacle : obstacles) {
+                    obstacle.draw(canvas);
+                }
+
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }
         }
@@ -150,7 +204,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        passaroX = getWidth() / 4 - passaroWidth / 2;
+        passaroX = getWidth() / 2 - passaroWidth / 2;
         resume();
     }
 
