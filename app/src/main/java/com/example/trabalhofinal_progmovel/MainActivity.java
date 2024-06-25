@@ -32,7 +32,13 @@ public class MainActivity extends AppCompatActivity {
                 realizarLogin();
             }
         });
-
+        binding.btnRanking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Ranking.class);
+                startActivity(intent);
+            }
+        });
         binding.btnCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
