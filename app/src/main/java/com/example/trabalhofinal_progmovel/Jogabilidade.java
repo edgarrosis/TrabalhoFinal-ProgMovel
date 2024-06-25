@@ -264,7 +264,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     private void gameOver() {
         isPlaying = false;
-        Intent intent = new Intent(getContext(), com.example.trabalhofinal_progmovel.MainActivity.class);
+        Intent intent = new Intent(getContext(), com.example.trabalhofinal_progmovel.GameOverSelecao.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         getContext().startActivity(intent);
     }
