@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -67,6 +69,10 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
     private int obstacleWidth = 180; // Largura dos obstáculos
 
     private Bitmap backgroundBitmap;
+    private SoundPool soundPool;
+    private int flapSoundId;
+    private int crashSoundId;
+    private int pontuaSoundId;
 
     public Jogabilidade(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -128,6 +134,20 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
                 }
             }
         });
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(1)
+                .setAudioAttributes(audioAttributes)
+                .build();
+
+        // Carrega o som de flapping
+        flapSoundId = soundPool.load(context, R.raw.flap, 1);
+        crashSoundId = soundPool.load(context, R.raw.fail, 1);
+        pontuaSoundId = soundPool.load(context, R.raw.pontuacao, 1);
     }
 
     @Override
@@ -183,6 +203,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
                     if (obstacle.isTop()) {
                         // Incrementa o score apenas se for o obstáculo superior
                         increaseScore();
+                        soundPool.play(pontuaSoundId, 1, 1, 0, 0, 2);
                     }
                 }
             }
@@ -263,6 +284,8 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     @Override
     public boolean onDown(MotionEvent e) {
+        soundPool.play(flapSoundId, 1, 1, 0, 0, 1);
+        velocity = flapVelocity;
         return true;
     }
 
@@ -292,6 +315,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     private void gameOver() {
         isPlaying = false;
+        soundPool.play(crashSoundId, 1, 1, 0, 0, 1);
 
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
