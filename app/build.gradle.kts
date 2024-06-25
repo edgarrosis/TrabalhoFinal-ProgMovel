@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id ("com.google.gms.google-services")
 }
 
 android {
@@ -11,7 +12,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -32,7 +33,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -40,4 +40,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation("com.google.firebase:firebase-auth:23.0.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation ("com.google.firebase:firebase-core:21.0.0")
 }
