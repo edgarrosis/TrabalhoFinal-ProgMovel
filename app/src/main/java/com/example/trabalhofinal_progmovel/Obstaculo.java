@@ -7,14 +7,17 @@ import android.graphics.Rect;
 public class Obstaculo {
     private int x, y, width, height;
     private Paint paint;
+    private boolean scored = false;
+    private boolean isTop;
 
-    public Obstaculo(int x, int y, int width, int height, int color) {
+    public Obstaculo(int x, int y, int width, int height, int color, boolean isTop) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.paint = new Paint();
         this.paint.setColor(color);
+        this.isTop = isTop;
     }
 
     public void draw(Canvas canvas) {
@@ -32,6 +35,18 @@ public class Obstaculo {
 
     public Rect getBounds() {
         return new Rect(x, y, x + width, y + height);
+    }
+
+    public boolean isScored() {
+        return scored;
+    }
+
+    public boolean isTop() {
+        return isTop;
+    }
+
+    public void setScored(boolean scored) {
+        this.scored = scored;
     }
 }
 

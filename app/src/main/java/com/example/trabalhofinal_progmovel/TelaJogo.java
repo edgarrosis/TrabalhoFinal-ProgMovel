@@ -25,16 +25,6 @@ public class TelaJogo extends AppCompatActivity {
         gameLayout.addView(jogabilidade); // Adiciona o SurfaceView ao layout
         btnPause = findViewById(R.id.btnPause);
 
-        btnPause.setOnClickListener(v -> {
-            if (isPaused) {
-                jogabilidade.resume();
-                btnPause.setImageResource(android.R.drawable.ic_media_pause);
-            } else {
-                jogabilidade.pause();
-                btnPause.setImageResource(android.R.drawable.ic_media_play);
-            }
-            isPaused = !isPaused;
-        });
     }
 
     @Override

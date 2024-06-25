@@ -1,5 +1,6 @@
 package com.example.trabalhofinal_progmovel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,11 +9,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.util.TypedValue;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +29,9 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
     private boolean isPlaying;
     private SurfaceHolder surfaceHolder;
     private GestureDetector gestureDetector;
+    private TextView txtScore;
+    private boolean isPaused = false;
+    private ImageButton btnPause;
 
     private float passaroY;
     private float velocity = 0;
@@ -35,6 +43,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     private List<Obstaculo> obstacles;
     private Random random;
+    private int numero = 0;
     private int obstacleGap = 480; // Gap entre os obstáculos de cima e de baixo (ajustado para 400)
     private int obstacleFrequency = 600; // Distância entre os obstáculos (ajustado para 500)
     private int obstacleWidth = 180; // Largura dos obstáculos
@@ -67,6 +76,26 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
         obstacles = new ArrayList<>();
         random = new Random();
+
+        txtScore = ((Activity) context).findViewById(R.id.txtScore);
+        if (txtScore != null) {
+            atualizarScore();
+        } else {
+            Log.e("Jogabilidade", "TextView txtScore não foi encontrada");
+        }
+
+        btnPause = ((Activity) context).findViewById(R.id.btnPause);
+        btnPause.setImageResource(android.R.drawable.ic_media_pause);
+        btnPause.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isPaused) {
+                    resume();
+                } else {
+                    pause();
+                }
+            }
+        });
     }
 
     @Override
@@ -83,9 +112,9 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         int gapStart = random.nextInt(screenHeight - obstacleGap); // Ponto onde o gap começa
 
         // Obstáculo superior
-        obstacles.add(new Obstaculo(getWidth(), 0, obstacleWidth, gapStart, Color.GREEN));
+        obstacles.add(new Obstaculo(getWidth(), 0, obstacleWidth, gapStart, Color.GREEN, true));
         // Obstáculo inferior
-        obstacles.add(new Obstaculo(getWidth(), gapStart + obstacleGap, obstacleWidth, screenHeight - (gapStart + obstacleGap), Color.GREEN));
+        obstacles.add(new Obstaculo(getWidth(), gapStart + obstacleGap, obstacleWidth, screenHeight - (gapStart + obstacleGap), Color.GREEN, false));
     }
 
     public void update() {
@@ -110,9 +139,20 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
             obstacle.update();
             if (obstacle.isOffScreen()) {
                 iterator.remove();
-            } else if (Rect.intersects(obstacle.getBounds(), new Rect((int) passaroX, (int) passaroY,
-                    (int) passaroX + passaroWidth, (int) passaroY + passaroHeight))) {
-                gameOver();
+            } else {
+                // Verifica colisão com o pássaro
+                if (Rect.intersects(obstacle.getBounds(), new Rect((int) passaroX, (int) passaroY,
+                        (int) passaroX + passaroWidth, (int) passaroY + passaroHeight))) {
+                    gameOver();
+                    return;
+                }
+                if (!obstacle.isScored() && obstacle.getBounds().right < passaroX) {
+                    obstacle.setScored(true);
+                    if (obstacle.isTop()) {
+                        // Incrementa o score apenas se for o obstáculo superior
+                        increaseScore();
+                    }
+                }
             }
         }
     }
@@ -146,12 +186,22 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
     }
 
     public void resume() {
+        isPaused = false;
         isPlaying = true;
         thread = new Thread(this);
         thread.start();
+
+        // Atualiza a imagem do botão de pause para "pausar"
+        ((Activity) getContext()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnPause.setImageResource(android.R.drawable.ic_media_pause);
+            }
+        });
     }
 
     public void pause() {
+        isPaused = true;
         try {
             isPlaying = false;
             if (thread != null) {
@@ -160,10 +210,22 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        // Atualiza a imagem do botão de pause para "play"
+        ((Activity) getContext()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnPause.setImageResource(android.R.drawable.ic_media_play);
+            }
+        });
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (isPaused) {
+            resume();
+            return true; // Consumir o evento de toque
+        }
         return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event);
     }
 
@@ -216,5 +278,19 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         pause();
+    }
+
+    private void atualizarScore() {
+        ((Activity) getContext()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txtScore.setText(String.valueOf(numero));
+            }
+        });
+    }
+
+    private void increaseScore() {
+        numero += 1;
+        atualizarScore();
     }
 }
