@@ -108,6 +108,7 @@ public class Cadastro extends AppCompatActivity {
         Map<String, Object> user = new HashMap<>();
         user.put("nome", nome);
         user.put("email", email);
+        user.put("recorde", 0);
 
         // Adição de um novo documento com o UID do usuário como ID
         db.collection("users")
