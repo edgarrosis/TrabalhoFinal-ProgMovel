@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -18,6 +19,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -78,6 +81,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         random = new Random();
 
         txtScore = ((Activity) context).findViewById(R.id.txtScore);
+        Typeface typeface = ResourcesCompat.getFont(this.getContext(), R.font.pixelify_sans_regular);
         if (txtScore != null) {
             atualizarScore();
         } else {
