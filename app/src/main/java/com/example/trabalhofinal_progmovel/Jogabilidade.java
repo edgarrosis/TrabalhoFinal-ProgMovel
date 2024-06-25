@@ -20,7 +20,16 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,6 +38,9 @@ import java.util.Random;
 
 public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder.Callback, GestureDetector.OnGestureListener {
     private Thread thread;
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private String uid;
     private boolean isPlaying;
     private SurfaceHolder surfaceHolder;
     private GestureDetector gestureDetector;
@@ -68,6 +80,18 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
         gestureDetector = new GestureDetector(context, this);
+
+        FirebaseApp.initializeApp(context);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
+        // Obtenha o usuário autenticado
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            uid = user.getUid();
+        } else {
+            Log.e("Jogabilidade", "Usuário não autenticado");
+        }
 
         // Carrega as imagens
         passaroBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.vermelho);
@@ -264,6 +288,39 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     private void gameOver() {
         isPlaying = false;
+
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            Long recordeAtual = documentSnapshot.getLong("recorde");
+                            if (recordeAtual == null || numero > recordeAtual) {
+                                db.collection("users").document(uid)
+                                        .update("recorde", numero)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d("Jogabilidade", "Recorde atualizado com sucesso");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.w("Jogabilidade", "Erro ao atualizar o recorde", e);
+                                            }
+                                        });
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Jogabilidade", "Erro ao obter recorde do usuário", e);
+                    }
+                });
+
         Intent intent = new Intent(getContext(), com.example.trabalhofinal_progmovel.GameOverSelecao.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         getContext().startActivity(intent);
