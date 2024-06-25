@@ -110,7 +110,8 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
             obstacle.update();
             if (obstacle.isOffScreen()) {
                 iterator.remove();
-            } else if (Rect.intersects(obstacle.getBounds(), new Rect((int) passaroX, (int) passaroY, (int) passaroX + passaroWidth, (int) passaroY + passaroHeight))) {
+            } else if (Rect.intersects(obstacle.getBounds(), new Rect((int) passaroX, (int) passaroY,
+                    (int) passaroX + passaroWidth, (int) passaroY + passaroHeight))) {
                 gameOver();
             }
         }
@@ -138,7 +139,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     private void sleep() {
         try {
-            Thread.sleep(17);
+            Thread.sleep(15);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -204,7 +205,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        passaroX = getWidth() / 2 - passaroWidth / 2;
+        passaroX = getWidth() / 3 - passaroWidth / 2;
         resume();
     }
 
