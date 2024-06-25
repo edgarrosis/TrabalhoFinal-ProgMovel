@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/txtReinicio"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="45dp"
@@ -29,9 +29,10 @@
         android:fontFamily="@font/pixelify_sans_regular"
         android:text="Gostaria de jogar novamente?"
         android:textSize="24sp"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtViewReinicio" />
+        app:layout_constraintTop_toBottomOf="@+id/txtNewRecorde" />
 
     <Button
         android:id="@+id/btnReinicio"
@@ -48,13 +49,13 @@
 
     <TextView
         android:id="@+id/txtSair"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="45dp"
         android:layout_marginEnd="10dp"
         android:fontFamily="@font/pixelify_sans_regular"
-        android:text="Deseja sair da aplicação?\nVocê será deslogado!"
+        android:text="Deseja retornar ao menu principal da aplicação?"
         android:textAlignment="center"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -68,9 +69,24 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
-        android:text="Sair"
         android:fontFamily="@font/pixelify_sans_regular"
+        android:text="Voltar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtSair" />
+
+    <TextView
+        android:id="@+id/txtNewRecorde"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="@font/pixelify_sans_regular"
+        android:text=""
+        android:textSize="28sp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtViewReinicio" />
 </androidx.constraintlayout.widget.ConstraintLayout>

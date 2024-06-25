@@ -45,6 +45,9 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
     private SurfaceHolder surfaceHolder;
     private GestureDetector gestureDetector;
     private TextView txtScore;
+
+    private TextView txtNewRecorde;
+    private boolean novoRecorde = false;
     private boolean isPaused = false;
     private ImageButton btnPause;
 
@@ -105,6 +108,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         random = new Random();
 
         txtScore = ((Activity) context).findViewById(R.id.txtScore);
+        txtNewRecorde = ((Activity) context).findViewById(R.id.txtNewRecorde);
         Typeface typeface = ResourcesCompat.getFont(this.getContext(), R.font.pixelify_sans_regular);
         if (txtScore != null) {
             atualizarScore();
@@ -310,18 +314,25 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
                                                 Log.w("Jogabilidade", "Erro ao atualizar o recorde", e);
                                             }
                                         });
+                                novoRecorde = true;
                             }
                         }
+                        startGameOverActivity(novoRecorde, numero);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w("Jogabilidade", "Erro ao obter recorde do usuário", e);
+                        startGameOverActivity(false, numero);
                     }
                 });
+    }
 
+    private void startGameOverActivity(boolean novoRecorde, int novoRecordeNumero) {
         Intent intent = new Intent(getContext(), com.example.trabalhofinal_progmovel.GameOverSelecao.class);
+        intent.putExtra("novoRecorde", novoRecorde);
+        intent.putExtra("novoRecordeNumero", novoRecordeNumero);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         getContext().startActivity(intent);
     }

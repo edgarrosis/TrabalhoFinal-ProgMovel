@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, senha)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-                        startActivity(new Intent(MainActivity.this,TelaJogo.class));
+                        startActivity(new Intent(MainActivity.this,telaSelecao.class));
                         Toast.makeText(this,"Logado com sucesso!",Toast.LENGTH_SHORT).show();
                     }else {
                         Toast.makeText(this,"Erro no Login!",Toast.LENGTH_SHORT).show();
