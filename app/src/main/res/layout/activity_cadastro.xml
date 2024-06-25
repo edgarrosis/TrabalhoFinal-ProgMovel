@@ -8,7 +8,7 @@
     tools:context=".Cadastro">
 
     <EditText
-        android:id="@+id/editTextText"
+        android:id="@+id/edtNome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="45dp"
@@ -41,10 +41,10 @@
         android:text="E-mail"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+        app:layout_constraintTop_toBottomOf="@+id/edtNome" />
 
     <EditText
-        android:id="@+id/editTextTextEmailAddress"
+        android:id="@+id/edtEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="45dp"
@@ -66,10 +66,10 @@
         android:text="Senha"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
+        app:layout_constraintTop_toBottomOf="@+id/edtEmail" />
 
     <EditText
-        android:id="@+id/editTextTextPassword"
+        android:id="@+id/edtSenha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="45dp"
@@ -90,7 +90,7 @@
         android:layout_marginTop="80dp"
         android:text="Voltar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword2" />
+        app:layout_constraintTop_toBottomOf="@+id/edtConfirmarSenha" />
 
     <Button
         android:id="@+id/btnConfCadastro"
@@ -100,7 +100,7 @@
         android:layout_marginEnd="45dp"
         android:text="Confirmar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword2" />
+        app:layout_constraintTop_toBottomOf="@+id/edtConfirmarSenha" />
 
     <TextView
         android:id="@+id/textView4"
@@ -111,10 +111,10 @@
         android:text="Confirmar Senha"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/edtSenha" />
 
     <EditText
-        android:id="@+id/editTextTextPassword2"
+        android:id="@+id/edtConfirmarSenha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="45dp"
