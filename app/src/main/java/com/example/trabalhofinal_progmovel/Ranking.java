@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -47,36 +46,37 @@ public class Ranking extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
 
-        listViewRank = binding.listRankings;
-
         if (user != null) {
             uid = user.getUid();
+            loadUserInfo(uid);
         } else {
             binding.txtUsuarioRank.setVisibility(View.GONE);
-            binding.imgBirdRed.setVisibility((ImageView.GONE));
-            binding.txtUsuarioPont.setVisibility(View.GONE);
+            binding.imgBirdRed.setVisibility(View.GONE);
         }
 
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        // Inicializando a lista de rankings
+        preencherUsuarios();
+    }
+
+    private void loadUserInfo(String uid) {
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
                             String nome = documentSnapshot.getString("nome");
-                            Long recordeAtual = documentSnapshot.getLong("recorde");
                             if (nome != null) {
                                 binding.txtUsuarioRank.setText(nome);
                             } else {
                                 binding.txtUsuarioRank.setText("Nome não encontrado");
                             }
-                            if (recordeAtual != null) {
-                                binding.txtUsuarioPont.setText("Pontualção Atual: " + recordeAtual.toString());
-                            } else {
-                                binding.txtUsuarioPont.setText("Recorde: 0");
-                            }
-                        } else {
-                            binding.txtUsuarioRank.setText("Nome não encontrado");
-                            binding.txtUsuarioRank.setText("0");
                         }
                     }
                 })
@@ -86,15 +86,6 @@ public class Ranking extends AppCompatActivity {
                         binding.txtUsuarioRank.setText("Erro ao obter nome");
                     }
                 });
-        binding.btnBackRank.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        //inicializando a lista de rankings.
-        preencherUsuarios();
     }
 
     private void preencherUsuarios() {
@@ -116,14 +107,8 @@ public class Ranking extends AppCompatActivity {
                         Collections.sort(users, (u1, u2) -> {
                             Long recorde1 = (Long) u1.get("recorde");
                             Long recorde2 = (Long) u2.get("recorde");
-
-                            if (recorde1 == null) {
-                                recorde1 = 0L;
-                            }
-                            if (recorde2 == null) {
-                                recorde2 = 0L;
-                            }
-
+                            if (recorde1 == null) return 1;
+                            if (recorde2 == null) return -1;
                             return recorde2.compareTo(recorde1);
                         });
 
@@ -132,18 +117,15 @@ public class Ranking extends AppCompatActivity {
                         for (Map<String, Object> usuario : users) {
                             String nome = (String) usuario.get("nome");
                             Long recorde = (Long) usuario.get("recorde");
-                            if (recorde == null) {
-                                recorde = 0L;
-                            }
+                            if (recorde == null) recorde = 0L;
                             displayList.add(nome + " - Recorde: " + recorde);
                         }
 
                         // Configura o adapter com a lista de exibição
-                        runOnUiThread(() -> {
-                            ArrayAdapter<String> adapter = new ArrayAdapter<>(Ranking.this,
-                                    android.R.layout.simple_list_item_1, displayList);
-                            listViewRank.setAdapter(adapter);
-                        });
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(Ranking.this,
+                                android.R.layout.simple_list_item_1, displayList);
+                        listViewRank = findViewById(R.id.listRankings);
+                        listViewRank.setAdapter(adapter);
                     } else {
                         // Trate o caso de falha na recuperação dos documentos
                         Log.w(TAG, "Error getting documents.", task.getException());

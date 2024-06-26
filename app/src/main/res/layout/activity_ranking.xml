@@ -51,27 +51,18 @@
         android:layout_marginTop="35dp"
         android:fontFamily="@font/pixelify_sans_regular"
         android:text="TextView"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/imgBirdRed"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/txtUsuarioPont"
+    <Button
+        android:id="@+id/btnBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="35dp"
-        android:fontFamily="@font/pixelify_sans_regular"
-        android:text="ponto"
-        app:layout_constraintStart_toEndOf="@+id/txtUsuarioRank"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/btnBackRank"
-        android:layout_width="50sp"
-        android:layout_height="50sp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
+        android:text="Voltar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="?attr/homeAsUpIndicator" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
