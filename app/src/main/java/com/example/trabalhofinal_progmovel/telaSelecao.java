@@ -49,6 +49,9 @@ public class telaSelecao extends AppCompatActivity {
         birdColors = new ArrayList<>();
         birdColors.add(R.drawable.vermelho); // Adicione as cores que deseja disponibilizar
         birdColors.add(R.drawable.azul);
+        birdColors.add(R.drawable.amarelo);
+        birdColors.add(R.drawable.emo);
+        birdColors.add(R.drawable.robo);
 
         imgSelectedBird.setImageResource(birdColors.get(currentColorIndex));
 
@@ -94,6 +97,12 @@ public class telaSelecao extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(telaSelecao.this,TelaJogo.class));
+            }
+        });
+        binding.btnRankingSelecao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(telaSelecao.this,Ranking.class));
             }
         });
         binding.btnLogout.setOnClickListener(new View.OnClickListener() {
