@@ -9,14 +9,15 @@
 
     <TextView
         android:id="@+id/txtNomeJogo"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="80dp"
         android:layout_marginEnd="10dp"
-        android:text="Flappy bird"
-        android:textSize="35sp"
         android:fontFamily="@font/pixelify_sans_regular"
+        android:text="Flappy bird"
+        android:textAlignment="center"
+        android:textSize="35sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -66,8 +67,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="64dp"
         android:layout_marginBottom="200dp"
-        android:text="Logout"
         android:fontFamily="@font/pixelify_sans_regular"
+        android:text="Sair"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -113,4 +114,26 @@
         app:layout_constraintBottom_toTopOf="@+id/imageButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnPlay" />
+
+    <ImageButton
+        android:id="@+id/btnLogoutApp"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="?attr/homeAsUpIndicator" />
+
+    <TextView
+        android:id="@+id/txtLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:layout_marginEnd="1dp"
+        android:text="Logout"
+        android:textSize="18sp"
+        android:fontFamily="@font/pixelify_sans_regular"
+        app:layout_constraintEnd_toStartOf="@+id/btnLogoutApp"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

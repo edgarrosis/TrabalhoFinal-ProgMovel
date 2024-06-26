@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.trabalhofinal_progmovel.databinding.ActivityMainBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -48,6 +49,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            // Usuário está logado, redirecionar para a tela de seleção ou tela do jogo
+            Intent intent = new Intent(MainActivity.this, telaSelecao.class);
+            startActivity(intent);
+            finish(); // Finaliza a MainActivity para que o usuário não possa voltar para ela
+        }
+    }
+
     private void realizarLogin(){
         String email = binding.edtEmailLogin.getText().toString();
         String senha = binding.edtSenhaLogin.getText().toString();
@@ -72,9 +85,11 @@ public class MainActivity extends AppCompatActivity {
                     if(task.isSuccessful()){
                         startActivity(new Intent(MainActivity.this,telaSelecao.class));
                         Toast.makeText(this,"Logado com sucesso!",Toast.LENGTH_SHORT).show();
+                        finish();
                     }else {
                         Toast.makeText(this,"Erro no Login!",Toast.LENGTH_SHORT).show();
                     }
                 });
+        
     }
 }

@@ -1,6 +1,7 @@
 package com.example.trabalhofinal_progmovel;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.trabalhofinal_progmovel.databinding.ActivityTelaSelecaoBinding;
@@ -97,9 +99,6 @@ public class telaSelecao extends AppCompatActivity {
         binding.btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(telaSelecao.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
                 finish();
             }
         });
@@ -109,7 +108,42 @@ public class telaSelecao extends AppCompatActivity {
                 selectBird(v);
             }
         });
+        binding.btnLogoutApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(telaSelecao.this)
+                        .setMessage("Deseja deslogar do jogo?")
+                        .setCancelable(false)
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                mAuth.signOut();
+                                Intent intent = new Intent(telaSelecao.this, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                finish();
+                                telaSelecao.super.onBackPressed();
+                            }
+                        })
+                        .setNegativeButton("Não", null)
+                        .show();
+            }
+        });
         }
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage("Deseja sair do jogo?")
+                .setCancelable(false)
+                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        telaSelecao.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("Não", null)
+                .show();
+
+    }
+
     public void selectBird(View view) {
         // Atualiza para a próxima cor disponível
         currentColorIndex = (currentColorIndex + 1) % birdColors.size();
