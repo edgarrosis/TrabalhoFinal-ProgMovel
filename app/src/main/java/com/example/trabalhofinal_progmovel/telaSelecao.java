@@ -64,6 +64,11 @@ public class telaSelecao extends AppCompatActivity {
             return;
         }
 
+        SharedPreferences sharedPreferences = getSharedPreferences("BirdPreferences", Context.MODE_PRIVATE);
+        int selectedBirdResource = sharedPreferences.getInt("selectedBird", R.drawable.vermelho);
+        imgSelectedBird.setImageResource(selectedBirdResource);
+        currentColorIndex = birdColors.indexOf(selectedBirdResource);
+
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override

@@ -362,6 +362,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         intent.putExtra("novoRecordeNumero", novoRecordeNumero);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         getContext().startActivity(intent);
+        ((Activity) getContext()).finish();
     }
 
     @Override
