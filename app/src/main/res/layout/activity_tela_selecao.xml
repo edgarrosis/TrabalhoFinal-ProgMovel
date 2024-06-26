@@ -80,4 +80,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/vermelho" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toEndOf="@+id/imageButton"
+        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        app:srcCompat="@drawable/vermelho" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        app:srcCompat="@android:drawable/ic_popup_sync" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="23dp"
+        android:layout_marginBottom="27dp"
+        android:fontFamily="@font/pixelify_sans_regular"
+        android:text="Clique para alterar Pássaro"
+        app:layout_constraintBottom_toTopOf="@+id/imageButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPlay" />
 </androidx.constraintlayout.widget.ConstraintLayout>

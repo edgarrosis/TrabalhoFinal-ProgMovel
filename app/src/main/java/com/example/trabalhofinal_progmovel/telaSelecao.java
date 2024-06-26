@@ -1,8 +1,11 @@
 package com.example.trabalhofinal_progmovel;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,11 +19,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class telaSelecao extends AppCompatActivity {
     private ActivityTelaSelecaoBinding binding;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private String uid;
+    private ImageView imgSelectedBird;
+    private int currentColorIndex = 0; // Índice da cor atual
+    private List<Integer> birdColors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +42,13 @@ public class telaSelecao extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser user = mAuth.getCurrentUser();
+        imgSelectedBird = findViewById(R.id.imageView);
+
+        birdColors = new ArrayList<>();
+        birdColors.add(R.drawable.vermelho); // Adicione as cores que deseja disponibilizar
+        birdColors.add(R.drawable.azul);
+
+        imgSelectedBird.setImageResource(birdColors.get(currentColorIndex));
 
         if (user != null) {
             uid = user.getUid();
@@ -87,5 +103,22 @@ public class telaSelecao extends AppCompatActivity {
                 finish();
             }
         });
+        binding.imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectBird(v);
+            }
+        });
+        }
+    public void selectBird(View view) {
+        // Atualiza para a próxima cor disponível
+        currentColorIndex = (currentColorIndex + 1) % birdColors.size();
+        imgSelectedBird.setImageResource(birdColors.get(currentColorIndex));
+
+        // Armazena a seleção do pássaro no SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("BirdPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("selectedBird", birdColors.get(currentColorIndex));
+        editor.apply();
     }
 }

@@ -3,6 +3,7 @@ package com.example.trabalhofinal_progmovel;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -103,7 +104,9 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         }
 
         // Carrega as imagens
-        passaroBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.vermelho);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("BirdPreferences", Context.MODE_PRIVATE);
+        int selectedBirdResourceId = sharedPreferences.getInt("selectedBird", R.drawable.vermelho);
+        passaroBitmap = BitmapFactory.decodeResource(getResources(), selectedBirdResourceId);
         backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
 
         passaroWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());

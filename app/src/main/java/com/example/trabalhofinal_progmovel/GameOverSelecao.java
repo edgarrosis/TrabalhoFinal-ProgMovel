@@ -1,15 +1,13 @@
 package com.example.trabalhofinal_progmovel;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.trabalhofinal_progmovel.databinding.ActivityGameOverSelecaoBinding;
 
@@ -28,6 +26,9 @@ public class GameOverSelecao extends AppCompatActivity {
 
         if (novoRecorde) {
             txtNewRecorde.setText("Novo recorde: " + novoRecordeNumero);
+            AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.color_animation);
+            set.setTarget(txtNewRecorde);
+            set.start();
         } else {
             txtNewRecorde.setText("");
         }
