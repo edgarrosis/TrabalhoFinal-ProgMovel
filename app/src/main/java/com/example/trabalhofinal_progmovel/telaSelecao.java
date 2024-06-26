@@ -49,6 +49,7 @@ public class telaSelecao extends AppCompatActivity {
         birdColors = new ArrayList<>();
         birdColors.add(R.drawable.vermelho); // Adicione as cores que deseja disponibilizar
         birdColors.add(R.drawable.azul);
+        birdColors.add(R.drawable.teste);
 
         imgSelectedBird.setImageResource(birdColors.get(currentColorIndex));
 

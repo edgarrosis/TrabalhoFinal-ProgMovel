@@ -2,10 +2,10 @@ package com.example.trabalhofinal_progmovel;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -32,7 +32,8 @@ public class Ranking extends AppCompatActivity {
     private String uid;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
-    private ListView listRanking;
+    private ListView listViewRank;
+    private Intent edtIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +47,7 @@ public class Ranking extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
 
-        //inicializando a lista de rankings.
-        preencherUsuarios();
+        listViewRank = binding.listRankings;
 
         if (user != null) {
             uid = user.getUid();
@@ -92,54 +92,57 @@ public class Ranking extends AppCompatActivity {
                 finish();
             }
         });
+
+        //inicializando a lista de rankings.
+        preencherUsuarios();
     }
 
     private void preencherUsuarios() {
-        // Inicialize o Firestore
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         // Referência para a coleção de usuários
         db.collection("users")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        List<Map<String, Object>> usuarios = new ArrayList<>();
+                        List<Map<String, Object>> users = new ArrayList<>();
                         for (DocumentSnapshot document : task.getResult()) {
                             Map<String, Object> user = document.getData();
                             if (user != null) {
                                 user.put("id", document.getId()); // Adiciona o ID do documento ao mapa do usuário
-                                usuarios.add(user);
+                                users.add(user);
                             }
                         }
 
                         // Ordena os usuários pelo recorde do maior para o menor
-                        Collections.sort(usuarios, (u1, u2) -> {
+                        Collections.sort(users, (u1, u2) -> {
                             Long recorde1 = (Long) u1.get("recorde");
                             Long recorde2 = (Long) u2.get("recorde");
+
+                            if (recorde1 == null) {
+                                recorde1 = 0L;
+                            }
+                            if (recorde2 == null) {
+                                recorde2 = 0L;
+                            }
+
                             return recorde2.compareTo(recorde1);
                         });
 
                         // Cria uma lista de strings para exibir no ListView
                         List<String> displayList = new ArrayList<>();
-                        for (Map<String, Object> usuario : usuarios) {
+                        for (Map<String, Object> usuario : users) {
                             String nome = (String) usuario.get("nome");
                             Long recorde = (Long) usuario.get("recorde");
+                            if (recorde == null) {
+                                recorde = 0L;
+                            }
                             displayList.add(nome + " - Recorde: " + recorde);
                         }
 
                         // Configura o adapter com a lista de exibição
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                                android.R.layout.simple_list_item_1, displayList);
-                        listRanking.setAdapter(adapter);
-
-                        listRanking.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Map<String, Object> usuarioSelecionado = usuarios.get(position);
-                                String usuarioId = (String) usuarioSelecionado.get("id");
-                                edtIntent.putExtra("Usuario_Selecionado_ID", usuarioId);
-                                startActivity(edtIntent);
-                            }
+                        runOnUiThread(() -> {
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(Ranking.this,
+                                    android.R.layout.simple_list_item_1, displayList);
+                            listViewRank.setAdapter(adapter);
                         });
                     } else {
                         // Trate o caso de falha na recuperação dos documentos
