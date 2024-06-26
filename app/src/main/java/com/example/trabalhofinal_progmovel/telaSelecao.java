@@ -96,6 +96,12 @@ public class telaSelecao extends AppCompatActivity {
                 startActivity(new Intent(telaSelecao.this,TelaJogo.class));
             }
         });
+        binding.btnRankingSelecao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(telaSelecao.this,Ranking.class));
+            }
+        });
         binding.btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

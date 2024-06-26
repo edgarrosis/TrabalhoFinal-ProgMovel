@@ -1,24 +1,150 @@
 package com.example.trabalhofinal_progmovel;
 
-import android.os.Bundle;
+import static android.content.ContentValues.TAG;
 
-import androidx.activity.EdgeToEdge;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.trabalhofinal_progmovel.databinding.ActivityRankingBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class Ranking extends AppCompatActivity {
+    private ActivityRankingBinding binding;
+    private String uid;
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private ListView listRanking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_ranking);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        binding = ActivityRankingBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        FirebaseApp.initializeApp(getApplicationContext());
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        //inicializando a lista de rankings.
+        preencherUsuarios();
+
+        if (user != null) {
+            uid = user.getUid();
+        } else {
+            binding.txtUsuarioRank.setVisibility(View.GONE);
+            binding.imgBirdRed.setVisibility((ImageView.GONE));
+            binding.txtUsuarioPont.setVisibility(View.GONE);
+        }
+
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            String nome = documentSnapshot.getString("nome");
+                            Long recordeAtual = documentSnapshot.getLong("recorde");
+                            if (nome != null) {
+                                binding.txtUsuarioRank.setText(nome);
+                            } else {
+                                binding.txtUsuarioRank.setText("Nome não encontrado");
+                            }
+                            if (recordeAtual != null) {
+                                binding.txtUsuarioPont.setText("Pontualção Atual: " + recordeAtual.toString());
+                            } else {
+                                binding.txtUsuarioPont.setText("Recorde: 0");
+                            }
+                        } else {
+                            binding.txtUsuarioRank.setText("Nome não encontrado");
+                            binding.txtUsuarioRank.setText("0");
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        binding.txtUsuarioRank.setText("Erro ao obter nome");
+                    }
+                });
+        binding.btnBackRank.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
         });
+    }
+
+    private void preencherUsuarios() {
+        // Inicialize o Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Referência para a coleção de usuários
+        db.collection("users")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Map<String, Object>> usuarios = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Map<String, Object> user = document.getData();
+                            if (user != null) {
+                                user.put("id", document.getId()); // Adiciona o ID do documento ao mapa do usuário
+                                usuarios.add(user);
+                            }
+                        }
+
+                        // Ordena os usuários pelo recorde do maior para o menor
+                        Collections.sort(usuarios, (u1, u2) -> {
+                            Long recorde1 = (Long) u1.get("recorde");
+                            Long recorde2 = (Long) u2.get("recorde");
+                            return recorde2.compareTo(recorde1);
+                        });
+
+                        // Cria uma lista de strings para exibir no ListView
+                        List<String> displayList = new ArrayList<>();
+                        for (Map<String, Object> usuario : usuarios) {
+                            String nome = (String) usuario.get("nome");
+                            Long recorde = (Long) usuario.get("recorde");
+                            displayList.add(nome + " - Recorde: " + recorde);
+                        }
+
+                        // Configura o adapter com a lista de exibição
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                                android.R.layout.simple_list_item_1, displayList);
+                        listRanking.setAdapter(adapter);
+
+                        listRanking.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Map<String, Object> usuarioSelecionado = usuarios.get(position);
+                                String usuarioId = (String) usuarioSelecionado.get("id");
+                                edtIntent.putExtra("Usuario_Selecionado_ID", usuarioId);
+                                startActivity(edtIntent);
+                            }
+                        });
+                    } else {
+                        // Trate o caso de falha na recuperação dos documentos
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                    }
+                });
     }
 }
