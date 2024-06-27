@@ -247,7 +247,7 @@ public class Jogabilidade extends SurfaceView implements Runnable, SurfaceHolder
         thread = new Thread(this);
         thread.start();
 
-        // Atualiza a imagem do botão de pause para "pausar"
+        //Atualiza a imagem do botão de pause para "pausar"
         ((Activity) getContext()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
